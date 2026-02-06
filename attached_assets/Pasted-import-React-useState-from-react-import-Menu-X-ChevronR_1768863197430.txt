@@ -1,0 +1,645 @@
+import React, { useState } from 'react';
+import { Menu, X, ChevronRight } from 'lucide-react';
+
+export default function LeonsLandscape() {
+  const [currentPage, setCurrentPage] = useState('home');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [adminLoggedIn, setAdminLoggedIn] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [logoClickCount, setLogoClickCount] = useState(0);
+  const [headerVideoUrl, setHeaderVideoUrl] = useState('');
+  const [youtubeLinks, setYoutubeLinks] = useState(['']);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [landscapeImgUrl, setLandscapeImgUrl] = useState('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop');
+  const [machineImgUrl, setMachineImgUrl] = useState('https://images.unsplash.com/photo-1581578731548-c64695c952?w=600&h=600&fit=crop');
+  const [firewoodImgUrl, setFirewoodImgUrl] = useState('https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=600&h=600&fit=crop');
+
+  const handleLogoClick = () => {
+    const newCount = logoClickCount + 1;
+    setLogoClickCount(newCount);
+    
+    if (newCount === 5) {
+      setShowAdminLogin(true);
+      setLogoClickCount(0);
+    }
+    
+    setTimeout(() => {
+      setLogoClickCount(0);
+    }, 2000);
+  };
+
+  const handleAdminLogin = () => {
+    if (adminPassword === 'leons123') {
+      setAdminLoggedIn(true);
+      setShowAdminLogin(false);
+      setAdminPassword('');
+    } else {
+      alert('Incorrect password');
+      setAdminPassword('');
+    }
+  };
+
+  const handleAddYoutubeLink = () => {
+    setYoutubeLinks([...youtubeLinks, '']);
+  };
+
+  const handleUpdateYoutubeLink = (index, value) => {
+    const newLinks = [...youtubeLinks];
+    newLinks[index] = value;
+    setYoutubeLinks(newLinks);
+  };
+
+  const handleRemoveYoutubeLink = (index) => {
+    setYoutubeLinks(youtubeLinks.filter((_, i) => i !== index));
+  };
+
+  const extractVideoId = (url) => {
+    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/);
+    return match ? match[1] : null;
+  };
+
+  return (
+    <div className="min-h-screen bg-white text-gray-900">
+      {/* Header/Navigation */}
+      <header className="fixed top-0 w-full bg-white border-b border-gray-200 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            {/* Logo */}
+            <button
+              onClick={() => {
+                handleLogoClick();
+                setCurrentPage('home');
+                setSelectedCategory(null);
+                setMobileMenuOpen(false);
+              }}
+              className="flex items-center gap-2 hover:opacity-70 transition"
+            >
+              <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-sm">L</span>
+              </div>
+              <span className="font-light text-lg tracking-widest hidden sm:inline">LEON'S</span>
+            </button>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex gap-12 items-center text-sm font-light tracking-wide">
+              <button
+                onClick={() => {
+                  setCurrentPage('home');
+                  setSelectedCategory(null);
+                }}
+                className={`transition ${currentPage === 'home' && !selectedCategory ? 'text-black font-normal' : 'text-gray-600 hover:text-black'}`}
+              >
+                HOME
+              </button>
+              <button
+                onClick={() => setCurrentPage('how-we-work')}
+                className={`transition ${currentPage === 'how-we-work' ? 'text-black font-normal' : 'text-gray-600 hover:text-black'}`}
+              >
+                HOW WE WORK
+              </button>
+              <button
+                onClick={() => setCurrentPage('contact')}
+                className={`transition ${currentPage === 'contact' ? 'text-black font-normal' : 'text-gray-600 hover:text-black'}`}
+              >
+                CONTACT
+              </button>
+            </nav>
+
+            {/* Mobile Menu Button */}
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-gray-900">
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+
+          {/* Mobile Navigation */}
+          {mobileMenuOpen && (
+            <nav className="md:hidden pb-4 border-t border-gray-200 pt-4 flex flex-col gap-4 text-sm font-light tracking-wide">
+              <button
+                onClick={() => {
+                  setCurrentPage('home');
+                  setSelectedCategory(null);
+                  setMobileMenuOpen(false);
+                }}
+                className="text-left hover:text-gray-600 transition"
+              >
+                HOME
+              </button>
+              <button
+                onClick={() => {
+                  setCurrentPage('how-we-work');
+                  setMobileMenuOpen(false);
+                }}
+                className="text-left hover:text-gray-600 transition"
+              >
+                HOW WE WORK
+              </button>
+              <button
+                onClick={() => {
+                  setCurrentPage('contact');
+                  setMobileMenuOpen(false);
+                }}
+                className="text-left hover:text-gray-600 transition"
+              >
+                CONTACT
+              </button>
+            </nav>
+          )}
+        </div>
+      </header>
+
+      {/* Admin Login Modal */}
+      {showAdminLogin && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4">
+          <div className="bg-white border border-gray-300 rounded p-8 max-w-sm w-full">
+            <h2 className="text-2xl font-light tracking-wide mb-6">Admin Access</h2>
+            <input
+              type="password"
+              placeholder="Enter password"
+              value={adminPassword}
+              onChange={(e) => setAdminPassword(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleAdminLogin()}
+              className="w-full bg-white border border-gray-300 rounded px-4 py-3 text-gray-900 mb-6 focus:outline-none focus:border-black transition font-light"
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={handleAdminLogin}
+                className="flex-1 bg-black text-white font-light tracking-wide py-3 rounded hover:bg-gray-800 transition"
+              >
+                LOGIN
+              </button>
+              <button
+                onClick={() => setShowAdminLogin(false)}
+                className="flex-1 bg-gray-200 text-gray-900 font-light tracking-wide py-3 rounded hover:bg-gray-300 transition"
+              >
+                CANCEL
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Admin Panel */}
+      {adminLoggedIn && (
+        <div className="bg-gray-50 border-b border-gray-200 mt-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-3xl font-light tracking-wide">Admin Terminal</h2>
+              <button
+                onClick={() => setAdminLoggedIn(false)}
+                className="bg-black text-white font-light tracking-wide px-6 py-2 rounded hover:bg-gray-800 transition text-sm"
+              >
+                LOGOUT
+              </button>
+            </div>
+
+            <div className="space-y-8">
+              {/* Header Video Management */}
+              <div className="bg-white border border-gray-300 rounded p-6">
+                <h3 className="text-lg font-light tracking-wide mb-4">Header Video URL</h3>
+                <input
+                  type="text"
+                  placeholder="Enter video URL (mp4, webm, etc.)"
+                  value={headerVideoUrl}
+                  onChange={(e) => setHeaderVideoUrl(e.target.value)}
+                  className="w-full bg-white border border-gray-300 rounded px-4 py-3 text-gray-900 mb-3 focus:outline-none focus:border-black transition font-light"
+                />
+                <p className="text-sm text-gray-500">Current: {headerVideoUrl || 'No video set'}</p>
+              </div>
+
+              {/* Image URLs Management */}
+              <div className="bg-white border border-gray-300 rounded p-6">
+                <h3 className="text-lg font-light tracking-wide mb-4">Image URLs</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-light mb-2">Landscape Supplies Image URL</label>
+                    <input
+                      type="text"
+                      placeholder="Enter landscape supplies image URL"
+                      value={landscapeImgUrl}
+                      onChange={(e) => setLandscapeImgUrl(e.target.value)}
+                      className="w-full bg-white border border-gray-300 rounded px-4 py-3 text-gray-900 focus:outline-none focus:border-black transition font-light text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-light mb-2">Machine Rentals Image URL</label>
+                    <input
+                      type="text"
+                      placeholder="Enter machine rentals image URL"
+                      value={machineImgUrl}
+                      onChange={(e) => setMachineImgUrl(e.target.value)}
+                      className="w-full bg-white border border-gray-300 rounded px-4 py-3 text-gray-900 focus:outline-none focus:border-black transition font-light text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-light mb-2">Firewood Delivery Image URL</label>
+                    <input
+                      type="text"
+                      placeholder="Enter firewood delivery image URL"
+                      value={firewoodImgUrl}
+                      onChange={(e) => setFirewoodImgUrl(e.target.value)}
+                      className="w-full bg-white border border-gray-300 rounded px-4 py-3 text-gray-900 focus:outline-none focus:border-black transition font-light text-xs"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* YouTube Links Management */}
+              <div className="bg-white border border-gray-300 rounded p-6">
+                <h3 className="text-lg font-light tracking-wide mb-4">How We Work - YouTube Links</h3>
+                {youtubeLinks.map((link, index) => (
+                  <div key={index} className="mb-4 p-4 bg-gray-50 border border-gray-300 rounded">
+                    <input
+                      type="text"
+                      placeholder="Enter YouTube URL"
+                      value={link}
+                      onChange={(e) => handleUpdateYoutubeLink(index, e.target.value)}
+                      className="w-full bg-white border border-gray-300 rounded px-4 py-2 text-gray-900 mb-3 focus:outline-none focus:border-black transition font-light text-xs"
+                    />
+                    {link && (
+                      <p className="text-xs text-gray-500 mb-2">Video ID: {extractVideoId(link) || 'Invalid URL'}</p>
+                    )}
+                    <button
+                      onClick={() => handleRemoveYoutubeLink(index)}
+                      className="bg-red-500 text-white text-sm font-light px-3 py-1 rounded hover:bg-red-600 transition"
+                    >
+                      REMOVE
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={handleAddYoutubeLink}
+                  className="bg-black text-white font-light tracking-wide px-6 py-2 rounded hover:bg-gray-800 transition text-sm"
+                >
+                  ADD LINK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <main className={adminLoggedIn ? 'mt-16' : 'mt-20'}>
+        {/* HOME PAGE */}
+        {currentPage === 'home' && !selectedCategory && (
+          <div>
+            {/* Hero Section */}
+            <section className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 className="text-6xl md:text-7xl font-light tracking-tight mb-6">
+                  Leon's Landscape
+                </h1>
+                <p className="text-xl md:text-2xl font-light text-gray-600 mb-12 tracking-wide">
+                  Premium Materials & Equipment for Your Projects
+                </p>
+              </div>
+            </section>
+
+            {/* Three Main Services */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+              <div className="grid md:grid-cols-3 gap-8">
+                {/* Landscape Supplies */}
+                <button
+                  onClick={() => setSelectedCategory('landscape')}
+                  className="group cursor-pointer transition transform hover:scale-105"
+                >
+                  <div className="bg-gray-200 rounded overflow-hidden mb-6 h-80 flex items-center justify-center">
+                    <img
+                      src={landscapeImgUrl}
+                      alt="Landscape Supplies"
+                      className="w-full h-full object-cover group-hover:opacity-90 transition"
+                      onError={(e) => e.target.style.display = 'none'}
+                    />
+                  </div>
+                  <h2 className="text-3xl font-light tracking-wide mb-2">Landscape Supplies</h2>
+                  <p className="text-gray-600 font-light mb-4">Fill dirt, sand, stone, and gravel</p>
+                  <div className="flex items-center gap-2 text-black font-light tracking-widest text-sm group-hover:gap-4 transition">
+                    EXPLORE <ChevronRight size={16} />
+                  </div>
+                </button>
+
+                {/* Machine Rentals */}
+                <button
+                  onClick={() => setSelectedCategory('machine')}
+                  className="group cursor-pointer transition transform hover:scale-105"
+                >
+                  <div className="bg-gray-200 rounded overflow-hidden mb-6 h-80 flex items-center justify-center">
+                    <img
+                      src={machineImgUrl}
+                      alt="Machine Rentals"
+                      className="w-full h-full object-cover group-hover:opacity-90 transition"
+                      onError={(e) => e.target.style.display = 'none'}
+                    />
+                  </div>
+                  <h2 className="text-3xl font-light tracking-wide mb-2">Machine Rentals</h2>
+                  <p className="text-gray-600 font-light mb-4">Professional equipment for your projects</p>
+                  <div className="flex items-center gap-2 text-black font-light tracking-widest text-sm group-hover:gap-4 transition">
+                    EXPLORE <ChevronRight size={16} />
+                  </div>
+                </button>
+
+                {/* Firewood Delivery */}
+                <button
+                  onClick={() => setSelectedCategory('firewood')}
+                  className="group cursor-pointer transition transform hover:scale-105"
+                >
+                  <div className="bg-gray-200 rounded overflow-hidden mb-6 h-80 flex items-center justify-center">
+                    <img
+                      src={firewoodImgUrl}
+                      alt="Firewood Delivery"
+                      className="w-full h-full object-cover group-hover:opacity-90 transition"
+                      onError={(e) => e.target.style.display = 'none'}
+                    />
+                  </div>
+                  <h2 className="text-3xl font-light tracking-wide mb-2">Firewood Delivery</h2>
+                  <p className="text-gray-600 font-light mb-4">Quality firewood delivered to your door</p>
+                  <div className="flex items-center gap-2 text-black font-light tracking-widest text-sm group-hover:gap-4 transition">
+                    EXPLORE <ChevronRight size={16} />
+                  </div>
+                </button>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* LANDSCAPE SUPPLIES DETAIL */}
+        {currentPage === 'home' && selectedCategory === 'landscape' && (
+          <div className="pt-24 pb-20">
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className="flex items-center gap-2 text-gray-600 hover:text-black transition font-light tracking-wide mb-8"
+              >
+                ← BACK
+              </button>
+
+              <h1 className="text-6xl font-light tracking-tight mb-12">Landscape Supplies</h1>
+
+              <div className="grid md:grid-cols-2 gap-16 items-center mb-16">
+                <div className="bg-gray-200 rounded overflow-hidden h-96 flex items-center justify-center">
+                  <img
+                    src={landscapeImgUrl}
+                    alt="Landscape Supplies"
+                    className="w-full h-full object-cover"
+                    onError={(e) => e.target.style.display = 'none'}
+                  />
+                </div>
+                <div className="border-l-4 border-black pl-8">
+                  <h2 className="text-4xl font-light tracking-wide mb-6">Premium Materials</h2>
+                  <p className="text-lg text-gray-600 font-light mb-6 leading-relaxed">
+                    We offer a complete selection of high-quality landscape materials to meet all your project needs. From foundation work to decorative finishing touches.
+                  </p>
+                  <button
+                    onClick={() => setCurrentPage('contact')}
+                    className="inline-flex items-center gap-3 bg-black text-white font-light tracking-widest px-8 py-4 rounded hover:bg-gray-800 transition uppercase text-sm"
+                  >
+                    GET QUOTE
+                    <ChevronRight size={18} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-8">
+                {[
+                  { title: 'Fill Dirt', desc: 'High-quality fill dirt for construction and landscaping projects. Available in bulk quantities.' },
+                  { title: 'Sand', desc: 'Premium sand for landscaping, construction, and various applications. Multiple grades available.' },
+                  { title: 'Stone', desc: 'Durable stone materials for driveways, patios, and decorative landscaping purposes.' },
+                  { title: 'Gravel', desc: 'Various gravel options for drainage, landscaping, pathways, and decorative uses.' },
+                ].map((product, i) => (
+                  <div key={i} className="bg-gray-50 border border-gray-300 rounded-lg p-8">
+                    <h3 className="text-2xl font-light tracking-wide mb-3">{product.title}</h3>
+                    <p className="text-gray-600 font-light">{product.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* MACHINE RENTALS DETAIL */}
+        {currentPage === 'home' && selectedCategory === 'machine' && (
+          <div className="pt-24 pb-20">
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className="flex items-center gap-2 text-gray-600 hover:text-black transition font-light tracking-wide mb-8"
+              >
+                ← BACK
+              </button>
+
+              <h1 className="text-6xl font-light tracking-tight mb-12">Machine Rentals</h1>
+
+              <div className="grid md:grid-cols-2 gap-16 items-center mb-16">
+                <div className="bg-gray-200 rounded overflow-hidden h-96 flex items-center justify-center">
+                  <img
+                    src={machineImgUrl}
+                    alt="Machine Rentals"
+                    className="w-full h-full object-cover"
+                    onError={(e) => e.target.style.display = 'none'}
+                  />
+                </div>
+                <div className="border-l-4 border-black pl-8">
+                  <h2 className="text-4xl font-light tracking-wide mb-6">Professional Equipment</h2>
+                  <p className="text-lg text-gray-600 font-light mb-6 leading-relaxed">
+                    Access to high-quality, well-maintained construction and landscaping equipment. Flexible rental terms to suit your project timeline.
+                  </p>
+                  <button
+                    onClick={() => setCurrentPage('contact')}
+                    className="inline-flex items-center gap-3 bg-black text-white font-light tracking-widest px-8 py-4 rounded hover:bg-gray-800 transition uppercase text-sm"
+                  >
+                    INQUIRE
+                    <ChevronRight size={18} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-8">
+                {[
+                  { title: 'Excavators', desc: 'Various sizes available for digging, grading, and heavy-duty landscaping work.' },
+                  { title: 'Loaders', desc: 'Wheel and track loaders for material handling and site preparation.' },
+                  { title: 'Compactors', desc: 'Soil and asphalt compactors for proper ground preparation and finishing.' },
+                  { title: 'Graders', desc: 'Road graders for precision grading and leveling applications.' },
+                ].map((equipment, i) => (
+                  <div key={i} className="bg-gray-50 border border-gray-300 rounded-lg p-8">
+                    <h3 className="text-2xl font-light tracking-wide mb-3">{equipment.title}</h3>
+                    <p className="text-gray-600 font-light">{equipment.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* FIREWOOD DELIVERY DETAIL */}
+        {currentPage === 'home' && selectedCategory === 'firewood' && (
+          <div className="pt-24 pb-20">
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className="flex items-center gap-2 text-gray-600 hover:text-black transition font-light tracking-wide mb-8"
+              >
+                ← BACK
+              </button>
+
+              <h1 className="text-6xl font-light tracking-tight mb-12">Firewood Delivery</h1>
+
+              <div className="grid md:grid-cols-2 gap-16 items-center mb-16">
+                <div className="bg-gray-200 rounded overflow-hidden h-96 flex items-center justify-center">
+                  <img
+                    src={firewoodImgUrl}
+                    alt="Firewood Delivery"
+                    className="w-full h-full object-cover"
+                    onError={(e) => e.target.style.display = 'none'}
+                  />
+                </div>
+                <div className="border-l-4 border-black pl-8">
+                  <h2 className="text-4xl font-light tracking-wide mb-6">Quality Firewood</h2>
+                  <p className="text-lg text-gray-600 font-light mb-6 leading-relaxed">
+                    Premium seasoned firewood delivered directly to your door. Perfect for heating, fireplaces, and outdoor gatherings. We handle all the delivery and stacking.
+                  </p>
+                  <button
+                    onClick={() => setCurrentPage('contact')}
+                    className="inline-flex items-center gap-3 bg-black text-white font-light tracking-widest px-8 py-4 rounded hover:bg-gray-800 transition uppercase text-sm"
+                  >
+                    ORDER NOW
+                    <ChevronRight size={18} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-8">
+                {[
+                  { title: 'Seasoned Oak', desc: 'Premium oak firewood, fully seasoned and ready to burn. Long-lasting and excellent heat output.' },
+                  { title: 'Hickory Mix', desc: 'High-quality hickory blend for superior burn time and pleasant aroma.' },
+                  { title: 'Mixed Hardwood', desc: 'Selection of premium hardwoods for reliable burning and consistent warmth.' },
+                  { title: 'Delivery & Stacking', desc: 'Convenient delivery to your location with professional stacking upon arrival.' },
+                ].map((option, i) => (
+                  <div key={i} className="bg-gray-50 border border-gray-300 rounded-lg p-8">
+                    <h3 className="text-2xl font-light tracking-wide mb-3">{option.title}</h3>
+                    <p className="text-gray-600 font-light">{option.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* HOW WE WORK PAGE */}
+        {currentPage === 'how-we-work' && (
+          <div className="pt-24 pb-20">
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h1 className="text-6xl font-light tracking-tight mb-16">How We Work</h1>
+
+              {youtubeLinks.length === 0 || youtubeLinks.every(link => !link) ? (
+                <div className="text-center py-24 border border-gray-300 rounded">
+                  <p className="text-xl text-gray-500 font-light">No videos available yet. Check back soon or contact us for more information!</p>
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 gap-12">
+                  {youtubeLinks.map((link, index) => {
+                    const videoId = extractVideoId(link);
+                    return videoId ? (
+                      <div key={index} className="rounded overflow-hidden border border-gray-300">
+                        <iframe
+                          width="100%"
+                          height="400"
+                          src={`https://www.youtube.com/embed/${videoId}`}
+                          title={`How We Work - Video ${index + 1}`}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          className="w-full aspect-video"
+                        />
+                      </div>
+                    ) : null;
+                  })}
+                </div>
+              )}
+            </section>
+          </div>
+        )}
+
+        {/* CONTACT PAGE */}
+        {currentPage === 'contact' && (
+          <div className="pt-24 pb-20">
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h1 className="text-6xl font-light tracking-tight mb-16">Contact Us</h1>
+
+              <div className="grid md:grid-cols-2 gap-16">
+                <div className="space-y-8">
+                  <div className="border-l-4 border-black pl-8">
+                    <h3 className="text-2xl font-light tracking-wide mb-4">Phone</h3>
+                    <a
+                      href="tel:(512)635-3857"
+                      className="text-lg text-gray-700 hover:text-black transition font-light"
+                    >
+                      (512) 635-3857
+                    </a>
+                  </div>
+
+                  <div className="border-l-4 border-black pl-8">
+                    <h3 className="text-2xl font-light tracking-wide mb-4">Email</h3>
+                    <a
+                      href="mailto:leonslandscapesupplies@gmail.com"
+                      className="text-lg text-gray-700 hover:text-black transition font-light break-all"
+                    >
+                      leonslandscapesupplies@gmail.com
+                    </a>
+                  </div>
+
+                  <div className="border-l-4 border-black pl-8">
+                    <h3 className="text-2xl font-light tracking-wide mb-4">Follow Us</h3>
+                    <a
+                      href="https://www.facebook.com/p/Leons-Landscape-Supplies-61573570174762/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-lg text-gray-700 hover:text-black transition font-light"
+                    >
+                      Facebook
+                      <ChevronRight size={16} />
+                    </a>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 border border-gray-300 rounded p-12 flex flex-col justify-center">
+                  <h2 className="text-3xl font-light tracking-wide mb-6">Get In Touch</h2>
+                  <p className="text-lg text-gray-600 font-light leading-relaxed mb-8">
+                    Have questions about our products or services? We're here to help. Contact us today and let's discuss your landscaping and construction needs.
+                  </p>
+                  <ul className="space-y-4 text-gray-700 font-light">
+                    <li className="flex items-center gap-3">
+                      <span className="text-black">•</span>
+                      <span>Call for immediate assistance</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <span className="text-black">•</span>
+                      <span>Email us with project details</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <span className="text-black">•</span>
+                      <span>Message us on Facebook</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <span className="text-black">•</span>
+                      <span>Visit for personal consultation</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-100 border-t border-gray-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+          <p className="text-gray-600 font-light tracking-wide text-sm">
+            © 2025 Leon's Landscape Supplies. All rights reserved.
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}

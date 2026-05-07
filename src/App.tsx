@@ -4,15 +4,15 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { Layout } from "@/components/Layout";
 import NotFound from "@/pages/not-found";
-
-// Pages
 import Home from "@/pages/Home";
 import Supplies from "@/pages/Supplies";
 import Firewood from "@/pages/Firewood";
 import HowWeWork from "@/pages/HowWeWork";
+import FAQ from "@/pages/FAQ";
 import Construction from "@/pages/Construction";
 import Contact from "@/pages/Contact";
 import Admin from "@/pages/Admin";
+import Stone from "@/pages/Stone";
 
 function Router() {
   return (
@@ -21,7 +21,9 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/supplies" component={Supplies} />
         <Route path="/firewood" component={Firewood} />
+        <Route path="/stone" component={Stone} />
         <Route path="/how-we-work" component={HowWeWork} />
+        <Route path="/faq" component={FAQ} />
         <Route path="/construction" component={Construction} />
         <Route path="/contact" component={Contact} />
         <Route path="/admin" component={Admin} />

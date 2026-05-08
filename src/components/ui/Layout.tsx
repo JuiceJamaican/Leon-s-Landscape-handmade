@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, Instagram, Facebook, Mail, Phone, Lock, ChevronDown, Calculator, Flame, Mountain } from "lucide-react";
+import { Menu, X, Instagram, Facebook, Mail, Phone, Lock, ChevronDown } from "lucide-react";
 import { useSiteContent } from "@/hooks/use-site-content";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -15,11 +15,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
   const { data: content } = useSiteContent();
 
-  // Secret Admin Trigger Logic
   const [secretClicks, setSecretClicks] = useState(0);
 
   const handleSecretClick = () => {
-    // If clicked less than 5 times, return to home page
     if (secretClicks < 4) {
       setLocation("/");
     }
@@ -33,7 +31,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
     });
   };
 
-  // Reset clicks if inactive for 2 seconds
   useEffect(() => {
     const timer = setTimeout(() => setSecretClicks(0), 2000);
     return () => clearTimeout(timer);
@@ -41,27 +38,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-foreground bg-background">
-      {/* Header */}
       <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-black/5 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          {/* Logo / Secret Trigger */}
-          <button 
+          <button
             onClick={handleSecretClick}
             className="flex items-center gap-2 group outline-none focus:outline-none"
           >
-            <img 
-              src="/assets/logo.png" 
-              alt="Leon's Landscape Supplies" 
+            <img
+              src="/assets/logo.png"
+              alt="Leon's Landscape Supplies"
               className="h-12 w-auto transition-transform group-hover:scale-105"
             />
             <span className="font-serif text-2xl tracking-tighter font-medium">LEON'S</span>
           </button>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-1 text-xs font-medium tracking-widest transition-all duration-300 hover:text-black outline-none">
-                HOME <ChevronDown size={14} />
+                SHOP <ChevronDown size={14} />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56">
                 <DropdownMenuItem asChild>
@@ -80,6 +74,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
+                  <Link href="/stone" className="w-full flex items-center gap-2 cursor-pointer">
+                    STONE & BOULDERS
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href="/supplies" className="w-full flex items-center gap-2 cursor-pointer">
                     COVERAGE CALCULATOR
                   </Link>
@@ -90,15 +89,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <NavLink href="/how-we-work" active={location === "/how-we-work"}>HOW WE WORK</NavLink>
             <NavLink href="/construction" active={location === "/construction"}>CONSTRUCTION</NavLink>
             <NavLink href="/contact" active={location === "/contact"}>CONTACT</NavLink>
-            
-            {/* CTA Button */}
+
             <Link href="/contact" className="ml-4 px-6 py-2.5 bg-black text-white text-xs font-medium tracking-widest hover:bg-black/80 transition-colors rounded-sm">
               GET A QUOTE
             </Link>
           </nav>
 
-          {/* Mobile Menu Button */}
-          <button 
+          <button
             className="md:hidden p-2 text-black hover:bg-black/5 rounded-full transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
@@ -107,7 +104,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -118,6 +114,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
           >
             <nav className="flex flex-col gap-6 text-center">
               <MobileNavLink href="/" onClick={() => setIsMobileMenuOpen(false)}>HOME</MobileNavLink>
+              <MobileNavLink href="/supplies" onClick={() => setIsMobileMenuOpen(false)}>LANDSCAPE SUPPLIES</MobileNavLink>
+              <MobileNavLink href="/firewood" onClick={() => setIsMobileMenuOpen(false)}>FIREWOOD</MobileNavLink>
+              <MobileNavLink href="/stone" onClick={() => setIsMobileMenuOpen(false)}>STONE & BOULDERS</MobileNavLink>
               <MobileNavLink href="/how-we-work" onClick={() => setIsMobileMenuOpen(false)}>HOW WE WORK</MobileNavLink>
               <MobileNavLink href="/contact" onClick={() => setIsMobileMenuOpen(false)}>CONTACT</MobileNavLink>
               <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)}>
@@ -130,12 +129,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
 
-      {/* Main Content */}
       <main className="flex-grow pt-20">
         {children}
       </main>
 
-      {/* Footer */}
       <footer className="bg-neutral-50 border-t border-black/5 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-12 text-center md:text-left">
@@ -147,7 +144,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 Premium landscape supplies and firewood delivery for professional and DIY projects.
               </p>
             </div>
-            
+
             <div className="flex flex-col gap-3 text-sm text-neutral-600">
               <h4 className="font-medium text-black mb-1">Contact</h4>
               <a href={`tel:${content?.phone}`} className="hover:text-black transition-colors flex items-center justify-center md:justify-start gap-2">
@@ -172,7 +169,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
           </div>
-          
+
           <div className="mt-12 pt-8 border-t border-black/5 text-center text-xs text-neutral-400 flex justify-between items-center">
             <p>&copy; {new Date().getFullYear()} Leon's Landscape Supplies. All rights reserved.</p>
             <Link href="/admin" className="opacity-50 hover:opacity-100 transition-opacity">
